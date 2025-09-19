@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>東京リベンジャーズ 設定推測アプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a1a1a;
+            --accent-color: #ff3333;
+            --gold-color: #ffd700;
+            --text-light: #ffffff;
+            --bg-dark: #0a0a0a;
+            --bg-section: #1a1a1a;
+            --border-color: #333;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #ff6666 100%);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255, 51, 51, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+            to { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 51, 51, 0.6); }
+        }
+
+        .subtitle {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .input-section, .result-section {
+            background: var(--bg-section);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: var(--gold-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: #2a2a2a;
+            color: var(--text-light);
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 5px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #ff6666 100%);
+            color: var(--text-light);
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 51, 51, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-box {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--gold-color);
+        }
+
+        .result-title {
+            font-size: 1.2em;
+            color: var(--gold-color);
+            margin-bottom: 10px;
+        }
+
+        .result-content {
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .setting-meter {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 10px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+
+        .setting-item {
+            text-align: center;
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .setting-item.highlight {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #ff6666 100%);
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 51, 51, 0.5);
+        }
+
+        .setting-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .setting-prob {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .advice-section {
+            background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid var(--gold-color);
+        }
+
+        .advice-title {
+            font-size: 1.3em;
+            color: var(--gold-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .advice-title::before {
+            content: "⚠️";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .advice-content {
+            font-size: 1em;
+            line-height: 1.8;
+        }
+
+        .indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .indicator.high {
+            background: #4CAF50;
+            animation: pulse 1s infinite;
+        }
+
+        .indicator.medium {
+            background: #FFC107;
+        }
+
+        .indicator.low {
+            background: #f44336;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+
+        .collapsible {
+            background: #2a2a2a;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 1.1em;
+            margin-top: 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .collapsible:hover {
+            background: #333;
+        }
+
+        .collapsible::after {
+            content: '\002B';
+            color: var(--gold-color);
+            font-weight: bold;
+            float: right;
+        }
+
+        .active::after {
+            content: "\2212";
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: #1a1a1a;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .collapsible-content.show {
+            max-height: 1000px;
+            padding: 15px;
+        }
+
+        .info-text {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔥 東京リベンジャーズ 設定推測アプリ 🔥</h1>
+            <div class="subtitle">個人使用目的 - 実戦データを入力して設定を推測</div>
+        </header>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">📊 基本データ入力</h2>
+                
+                <div class="input-group">
+                    <label for="games">総ゲーム数</label>
+                    <input type="number" id="games" placeholder="例: 1000" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label for="bonus-count">初当たり回数（東卍CHANCE + 東卍RUSH）</label>
+                    <input type="number" id="bonus-count" placeholder="例: 3" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label for="at-count">東卍RUSH（AT）回数</label>
+                    <input type="number" id="at-count" placeholder="例: 2" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label for="rb-count">東卍CHANCE（RB）回数</label>
+                    <input type="number" id="rb-count" placeholder="例: 1" min="0">
+                </div>
+
+                <button class="collapsible">🎯 CZ・特殊演出データ（クリックで開く）</button>
+                <div class="collapsible-content">
+                    <div class="input-group">
+                        <label for="midnight-count">MIDNIGHT MODE回数</label>
+                        <input type="number" id="midnight-count" placeholder="例: 1" min="0">
+                        <div class="info-text">通常時のCZ（成功期待度約50%）</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="kisaki-count">稀咲陰謀回数</label>
+                        <input type="number" id="kisaki-count" placeholder="例: 0" min="0">
+                        <div class="info-text">上位CZ（成功期待度約75%）1回でも出れば高設定期待度UP</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="revenge-total">REVENGEフリーズ総回数</label>
+                        <input type="number" id="revenge-total" placeholder="例: 1" min="0">
+                        <div class="info-text">AT後の引き戻しフリーズ</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="revenge-zencho">決戦前夜失敗後のREVENGE回数</label>
+                        <input type="number" id="revenge-zencho" placeholder="例: 0" min="0">
+                        <div class="info-text">出現すれば高設定期待度UP</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="revenge-rb">東卍CHANCE後のREVENGE回数</label>
+                        <input type="number" id="revenge-rb" placeholder="例: 0" min="0">
+                        <div class="info-text">出現すれば高設定期待度UP</div>
+                    </div>
+                </div>
+
+                <button class="collapsible">🎮 小役カウント（クリックで開く）</button>
+                <div class="collapsible-content">
+                    <div class="input-group">
+                        <label for="bell-count">共通ベル回数（通常時のみ）</label>
+                        <input type="number" id="bell-count" placeholder="例: 10" min="0">
+                        <div class="info-text">通常時のみカウント（AT中は除外）</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="middle-cherry">中段チェリー回数</label>
+                        <input type="number" id="middle-cherry" placeholder="例: 0" min="0">
+                        <div class="info-text">設定4以上で出現率UP</div>
+                    </div>
+                </div>
+
+                <button class="collapsible">🌟 示唆演出（クリックで開く）</button>
+                <div class="collapsible-content">
+                    <h4 style="color: var(--gold-color); margin-bottom: 15px;">終了画面</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="end-chihuru">
+                            <label for="end-chihuru">千冬・場地（青背景）</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="end-red">
+                            <label for="end-red">武道・ドラケン・マイキー（赤背景）</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="end-valhalla">
+                            <label for="end-valhalla">芭流覇羅集合（青背景）</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="end-toman-red">
+                            <label for="end-toman-red">東卍集合（赤背景）</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="end-hina">
+                            <label for="end-hina">ヒナ（青背景）</label>
+                        </div>
+                    </div>
+
+                    <h4 style="color: var(--gold-color); margin: 15px 0;">枚数突破表示</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="over-222">
+                            <label for="over-222">222枚OVER</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="over-246">
+                            <label for="over-246">246枚OVER</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="over-456">
+                            <label for="over-456">456枚OVER</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="over-555">
+                            <label for="over-555">555枚OVER</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="over-666">
+                            <label for="over-666">666枚OVER</label>
+                        </div>
+                    </div>
+
+                    <h4 style="color: var(--gold-color); margin: 15px 0;">サミートロフィー</h4>
+                    <div class="input-group">
+                        <select id="trophy">
+                            <option value="none">なし</option>
+                            <option value="bronze">銅（設定2以上）</option>
+                            <option value="silver">銀（設定3以上）</option>
+                            <option value="gold">金（設定4以上）</option>
+                            <option value="kirin">キリン柄（設定5以上）</option>
+                            <option value="rainbow">虹（設定6）</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="collapsible">📍 現在の状況（クリックで開く）</button>
+                <div class="collapsible-content">
+                    <div class="input-group">
+                        <label for="current-points">現在のポイント数</label>
+                        <input type="number" id="current-points" placeholder="例: 250" min="0" max="500">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="current-cycle">現在の周期</label>
+                        <select id="current-cycle">
+                            <option value="1">1周期目</option>
+                            <option value="2">2周期目</option>
+                            <option value="3">3周期目</option>
+                            <option value="4">4周期目</option>
+                            <option value="5">5周期目</option>
+                            <option value="6">6周期目</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="games-since-at">AT間ゲーム数</label>
+                        <input type="number" id="games-since-at" placeholder="例: 300" min="0">
+                    </div>
+                </div>
+
+                <button onclick="analyze()" style="margin-top: 20px;">🔍 設定推測を実行</button>
+                <button onclick="resetAll()" style="background: #666;">🔄 リセット</button>
+            </div>
+
+            <div class="result-section">
+                <h2 class="section-title">📈 推測結果</h2>
+                <div id="results">
+                    <div class="result-box">
+                        <div class="result-content">データを入力して「設定推測を実行」ボタンを押してください</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 設定別データ
+        const settingData = {
+            1: {
+                bonusRate: 1/282.4,
+                atRate: 1/482.2,
+                czMidnight: 1/1278.4,
+                czKisaki: 1/14520.4,
+                bellRate: 1/99.3,
+                middleCherry: 1/16384.0,
+                payout: 97.8
+            },
+            2: {
+                bonusRate: 1/279.5,
+                atRate: 1/474.7,
+                czMidnight: 1/1200, // 推定値
+                czKisaki: 1/12000, // 推定値
+                bellRate: 1/95, // 推定値
+                middleCherry: 1/16384.0,
+                payout: 98.8
+            },
+            3: {
+                bonusRate: 1/272.2,
+                atRate: 1/456.9,
+                czMidnight: 1/1100, // 推定値
+                czKisaki: 1/10000, // 推定値
+                bellRate: 1/92, // 推定値
+                middleCherry: 1/16384.0,
+                payout: 101.4
+            },
+            4: {
+                bonusRate: 1/255.8,
+                atRate: 1/414.0,
+                czMidnight: 1/1000, // 推定値
+                czKisaki: 1/8000, // 推定値
+                bellRate: 1/88, // 推定値
+                middleCherry: 1/13107.2,
+                payout: 106.3
+            },
+            5: {
+                bonusRate: 1/249.1,
+                atRate: 1/393.8,
+                czMidnight: 1/900, // 推定値
+                czKisaki: 1/6000, // 推定値
+                bellRate: 1/85, // 推定値
+                middleCherry: 1/13107.2,
+                payout: 111.2
+            },
+            6: {
+                bonusRate: 1/240.1,
+                atRate: 1/373.1,
+                czMidnight: 1/800, // 推定値
+                czKisaki: 1/4000, // 推定値
+                bellRate: 1/80, // 推定値
+                middleCherry: 1/10922.7,
+                payout: 114.9
+            }
+        };
+
+        // 折りたたみ機能
+        const collapsibles = document.querySelectorAll('.collapsible');
+        collapsibles.forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                content.classList.toggle('show');
+            });
+        });
+
+        function analyze() {
+            const games = parseInt(document.getElementById('games').value) || 0;
+            const bonusCount = parseInt(document.getElementById('bonus-count').value) || 0;
+            const atCount = parseInt(document.getElementById('at-count').value) || 0;
+            const rbCount = parseInt(document.getElementById('rb-count').value) || 0;
+            const midnightCount = parseInt(document.getElementById('midnight-count').value) || 0;
+            const kisakiCount = parseInt(document.getElementById('kisaki-count').value) || 0;
+            const revengeTotal = parseInt(document.getElementById('revenge-total').value) || 0;
+            const revengeZencho = parseInt(document.getElementById('revenge-zencho').value) || 0;
+            const revengeRb = parseInt(document.getElementById('revenge-rb').value) || 0;
+            const bellCount = parseInt(document.getElementById('bell-count').value) || 0;
+            const middleCherry = parseInt(document.getElementById('middle-cherry').value) || 0;
+            const currentPoints = parseInt(document.getElementById('current-points').value) || 0;
+            const currentCycle = parseInt(document.getElementById('current-cycle').value) || 1;
+            const gamesSinceAt = parseInt(document.getElementById('games-since-at').value) || 0;
+
+            if (games === 0) {
+                alert('ゲーム数を入力してください');
+                return;
+            }
+
+            // 設定推測スコア計算
+            const scores = {};
+            for (let setting = 1; setting <= 6; setting++) {
+                scores[setting] = 100; // 基準スコア
+
+                // 初当たり確率による評価
+                if (bonusCount > 0) {
+                    const actualRate = games / bonusCount;
+                    const expectedRate = 1 / settingData[setting].bonusRate;
+                    const diff = Math.abs(actualRate - expectedRate);
+                    scores[setting] -= diff * 0.1;
+                }
+
+                // AT確率による評価
+                if (atCount > 0) {
+                    const actualAtRate = games / atCount;
+                    const expectedAtRate = 1 / settingData[setting].atRate;
+                    const diff = Math.abs(actualAtRate - expectedAtRate);
+                    scores[setting] -= diff * 0.15;
+                }
+
+                // CZ確率による評価
+                if (midnightCount > 0) {
+                    const actualCzRate = games / midnightCount;
+                    const expectedCzRate = 1 / settingData[setting].czMidnight;
+                    const diff = Math.abs(actualCzRate - expectedCzRate);
+                    scores[setting] -= diff * 0.05;
+                }
+
+                // 稀咲陰謀出現で高設定評価
+                if (kisakiCount > 0) {
+                    scores[setting] += (setting - 3) * 10; // 高設定ほどボーナス
+                }
+
+                // REVENGEフリーズ評価
+                if (revengeZencho > 0 || revengeRb > 0) {
+                    scores[setting] += (setting - 2) * 15; // 高設定評価UP
+                }
+
+                // 中段チェリー評価
+                if (middleCherry > 0) {
+                    if (setting >= 4) {
+                        scores[setting] += 20;
+                    }
+                    if (setting === 6) {
+                        scores[setting] += 10;
+                    }
+                }
+
+                // 示唆演出による評価
+                if (document.getElementById('over-222').checked && setting >= 2) scores[setting] += 15;
+                if (document.getElementById('over-246').checked && setting % 2 === 0) scores[setting] += 20;
+                if (document.getElementById('over-456').checked && setting >= 4) scores[setting] += 25;
+                if (document.getElementById('over-555').checked && setting >= 5) scores[setting] += 30;
+                if (document.getElementById('over-666').checked && setting === 6) scores[setting] += 50;
+
+                // サミートロフィー
+                const trophy = document.getElementById('trophy').value;
+                if (trophy === 'bronze' && setting >= 2) scores[setting] += 20;
+                if (trophy === 'silver' && setting >= 3) scores[setting] += 30;
+                if (trophy === 'gold' && setting >= 4) scores[setting] += 40;
+                if (trophy === 'kirin' && setting >= 5) scores[setting] += 50;
+                if (trophy === 'rainbow' && setting === 6) scores[setting] += 100;
+            }
+
+            // スコアを正規化（確率に変換）
+            const maxScore = Math.max(...Object.values(scores));
+            const minScore = Math.min(...Object.values(scores));
+            const range = maxScore - minScore || 1;
+
+            const probabilities = {};
+            let totalProb = 0;
+            for (let setting = 1; setting <= 6; setting++) {
+                probabilities[setting] = Math.exp((scores[setting] - minScore) / range * 2);
+                totalProb += probabilities[setting];
+            }
+
+            // 確率を正規化
+            for (let setting = 1; setting <= 6; setting++) {
+                probabilities[setting] = (probabilities[setting] / totalProb * 100).toFixed(1);
+            }
+
+            // 最も可能性の高い設定を特定
+            const mostLikely = Object.entries(probabilities).reduce((a, b) => 
+                parseFloat(a[1]) > parseFloat(b[1]) ? a : b
+            )[0];
+
+            // やめどき判定
+            let quitAdvice = generateQuitAdvice(currentPoints, currentCycle, gamesSinceAt, atCount, rbCount);
+
+            // 結果表示
+            displayResults(probabilities, mostLikely, games, bonusCount, atCount, quitAdvice);
+        }
+
+        function generateQuitAdvice(points, cycle, gamesSinceAt, atCount, rbCount) {
+            let advice = [];
+            let shouldContinue = false;
+
+            // ポイントによる判定
+            if (cycle === 1 && points >= 150) {
+                advice.push("📍 1周期目で150pt以上：200pt天井まで続行推奨");
+                shouldContinue = true;
+            } else if (points >= 400) {
+                advice.push("📍 400pt以上：500pt天井まで続行推奨");
+                shouldContinue = true;
+            } else if (points >= 250 && cycle <= 3) {
+                advice.push("📍 250pt以上で3周期以内：周期到達まで様子見推奨");
+                shouldContinue = true;
+            }
+
+            // 周期による判定
+            if (cycle <= 3) {
+                advice.push(`📊 ${cycle}周期目：3周期以内の当選期待度約72%`);
+                if (cycle === 3) {
+                    advice.push("⚠️ 3周期目：チャンス/天国モードなら天井");
+                    shouldContinue = true;
+                }
+            }
+
+            // AT間ゲーム数による判定
+            if (gamesSinceAt >= 800) {
+                advice.push("🔥 AT間800G以上：天井（1190G）まで続行推奨");
+                shouldContinue = true;
+            } else if (gamesSinceAt >= 300) {
+                advice.push("📈 AT間300G以上：期待値108%以上の可能性");
+                shouldContinue = true;
+            } else if (gamesSinceAt >= 200) {
+                advice.push("📊 AT間200G以上：期待値105%以上の可能性");
+            }
+
+            // RBスルー回数
+            const rbSuru = rbCount - atCount;
+            if (rbSuru >= 3) {
+                advice.push("🎯 RB3回スルー：次回AT濃厚まで続行推奨");
+                shouldContinue = true;
+            }
+
+            // 総合判定
+            if (shouldContinue) {
+                advice.unshift("✅ 続行推奨");
+            } else if (points <= 100 && cycle >= 4 && gamesSinceAt <= 100) {
+                advice.unshift("⏹️ やめどき");
+            } else {
+                advice.unshift("🔄 状況次第で判断");
+            }
+
+            return advice;
+        }
+
+        function displayResults(probabilities, mostLikely, games, bonusCount, atCount, quitAdvice) {
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
+                <div class="setting-meter">
+                    ${[1, 2, 3, 4, 5, 6].map(s => `
+                        <div class="setting-item ${s == mostLikely ? 'highlight' : ''}">
+                            <div class="setting-value">設定${s}</div>
+                            <div class="setting-prob">${probabilities[s]}%</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title">📊 実戦データ分析</div>
+                    <div class="result-content">
+                        初当たり確率: ${bonusCount > 0 ? `1/${(games/bonusCount).toFixed(1)}` : '---'}<br>
+                        AT確率: ${atCount > 0 ? `1/${(games/atCount).toFixed(1)}` : '---'}<br>
+                        総ゲーム数: ${games}G
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title">🎯 推測結果</div>
+                    <div class="result-content">
+                        <strong style="font-size: 1.2em; color: var(--gold-color);">
+                            最有力候補: 設定${mostLikely} (${probabilities[mostLikely]}%)
+                        </strong><br>
+                        <span class="indicator ${probabilities[mostLikely] >= 30 ? 'high' : probabilities[mostLikely] >= 20 ? 'medium' : 'low'}"></span>
+                        信頼度: ${probabilities[mostLikely] >= 30 ? '高' : probabilities[mostLikely] >= 20 ? '中' : '低'}
+                    </div>
+                </div>
+
+                <div class="advice-section">
+                    <div class="advice-title">やめどき判断</div>
+                    <div class="advice-content">
+                        ${quitAdvice.map((advice, i) => 
+                            `${i === 0 ? `<strong style="font-size: 1.2em;">${advice}</strong>` : advice}<br>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function resetAll() {
+            if (confirm('すべての入力データをリセットしますか？')) {
+                document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+                document.getElementById('results').innerHTML = `
+                    <div class="result-box">
+                        <div class="result-content">データを入力して「設定推測を実行」ボタンを押してください</div>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
