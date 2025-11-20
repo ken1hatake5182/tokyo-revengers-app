@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ネオプラネット 設定・モード推測アプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #000033;
+            --accent-color: #0066ff;
+            --gold-color: #ffd700;
+            --space-blue: #001166;
+            --planet-red: #ff3366;
+            --text-light: #ffffff;
+            --bg-dark: #000011;
+            --bg-section: #000844;
+            --border-color: #0099ff;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: #000011;
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 宇宙背景エフェクト */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 102, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 51, 102, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--space-blue) 0%, var(--accent-color) 100%);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "🪐";
+            position: absolute;
+            font-size: 100px;
+            opacity: 0.1;
+            left: -20px;
+            top: -20px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        header::after {
+            content: "🌟";
+            position: absolute;
+            font-size: 80px;
+            opacity: 0.1;
+            right: -20px;
+            bottom: -20px;
+            animation: float 6s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+            to { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(0, 102, 255, 0.6); }
+        }
+
+        .subtitle {
+            font-size: 0.9em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .input-section, .result-section {
+            background: rgba(0, 8, 68, 0.9);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 102, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: var(--gold-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #aaccff;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: rgba(0, 33, 99, 0.8);
+            color: var(--text-light);
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(0, 102, 255, 0.5);
+            background: rgba(0, 33, 99, 1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 5px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #0099ff 100%);
+            color: var(--text-light);
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 102, 255, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-box {
+            background: rgba(0, 33, 99, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--gold-color);
+        }
+
+        .result-title {
+            font-size: 1.2em;
+            color: var(--gold-color);
+            margin-bottom: 10px;
+        }
+
+        .result-content {
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .setting-meter {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(0, 33, 99, 0.8);
+            border-radius: 8px;
+        }
+
+        .setting-item {
+            text-align: center;
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .setting-item.highlight {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #0099ff 100%);
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 102, 255, 0.5);
+        }
+
+        .setting-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .setting-prob {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .mode-display {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .mode-item {
+            padding: 10px;
+            text-align: center;
+            background: rgba(0, 33, 99, 0.8);
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .mode-item.likely {
+            background: linear-gradient(135deg, var(--planet-red) 0%, #ff6699 100%);
+            transform: scale(1.05);
+            border-color: var(--gold-color);
+        }
+
+        .advice-section {
+            background: linear-gradient(135deg, rgba(0, 33, 99, 0.8) 0%, rgba(0, 66, 166, 0.8) 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid var(--gold-color);
+        }
+
+        .advice-title {
+            font-size: 1.3em;
+            color: var(--gold-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .advice-title::before {
+            content: "🚀";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .advice-content {
+            font-size: 1em;
+            line-height: 1.8;
+        }
+
+        .indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .indicator.high {
+            background: #4CAF50;
+            animation: pulse 1s infinite;
+        }
+
+        .indicator.medium {
+            background: #FFC107;
+        }
+
+        .indicator.low {
+            background: #f44336;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+
+        .collapsible {
+            background: rgba(0, 33, 99, 0.8);
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 1.1em;
+            margin-top: 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .collapsible:hover {
+            background: rgba(0, 66, 166, 0.8);
+        }
+
+        .collapsible::after {
+            content: '\002B';
+            color: var(--gold-color);
+            font-weight: bold;
+            float: right;
+        }
+
+        .active::after {
+            content: "\2212";
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: rgba(0, 17, 51, 0.5);
+            border-radius: 0 0 5px 5px;
+        }
+
+        .collapsible-content.show {
+            max-height: 1500px;
+            padding: 15px;
+        }
+
+        .info-text {
+            font-size: 0.85em;
+            color: #aaccff;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="container">
+        <header>
+            <h1>🪐 ネオプラネット 設定・モード推測アプリ 🌟</h1>
+            <div class="subtitle">個人使用目的 - 実戦データから設定とモードを同時推測</div>
+        </header>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">📊 基本データ入力</h2>
+                
+                <div class="input-group">
+                    <label for="games">総ゲーム数</label>
+                    <input type="number" id="games" placeholder="例: 1000" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label for="bb-count">BB回数（SBB含む）</label>
+                    <input type="number" id="bb-count" placeholder="例: 3" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label for="rb-count">RB回数</label>
+                    <input type="number" id="rb-count" placeholder="例: 1" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label for="bonus-total">ボーナス合算回数</label>
+                    <input type="number" id="bonus-total" placeholder="自動計算されます" readonly style="background: rgba(0, 33, 99, 0.5);">
+                </div>
+
+                <button class="collapsible">🌟 星座演出（クリックで開く）</button>
+                <div class="collapsible-content">
+                    <h4 style="color: var(--gold-color); margin-bottom: 15px;">サブ液晶タッチ時の星座（101G/301G）</h4>
+                    <div class="input-group">
+                        <label for="constellation-101">101G時の星座</label>
+                        <select id="constellation-101">
+                            <option value="none">なし/確認していない</option>
+                            <option value="uo">うお座（基本）</option>
+                            <option value="ohituji">おひつじ座（モードB示唆）</option>
+                            <option value="kani">かに座（モードB示唆）</option>
+                            <option value="oushi">おうし座（モードB示唆強）</option>
+                            <option value="koto">こと座（モードB以上濃厚）</option>
+                            <option value="tenbin">てんびん座（モードC濃厚）</option>
+                            <option value="pegasus">ペガサス座（モードD/E濃厚）</option>
+                            <option value="rino">リノ座（設定4以上濃厚）</option>
+                            <option value="kerot">ケロット＆ケロルン座（設定6濃厚）</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="constellation-301">301G時の星座</label>
+                        <select id="constellation-301">
+                            <option value="none">なし/確認していない</option>
+                            <option value="uo">うお座（基本）</option>
+                            <option value="ohituji">おひつじ座（モードB示唆）</option>
+                            <option value="kani">かに座（モードB示唆）</option>
+                            <option value="oushi">おうし座（モードB示唆強）</option>
+                            <option value="koto">こと座（モードB以上濃厚）</option>
+                            <option value="tenbin">てんびん座（モードC濃厚）</option>
+                            <option value="pegasus">ペガサス座（モードD/E濃厚）</option>
+                            <option value="rino">リノ座（設定4以上濃厚）</option>
+                            <option value="kerot">ケロット＆ケロルン座（設定6濃厚）</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="collapsible">🎮 示唆演出（クリックで開く）</button>
+                <div class="collapsible-content">
+                    <h4 style="color: var(--gold-color); margin-bottom: 15px;">ボーナス終了画面</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="end-eisei">
+                            <label for="end-eisei">衛星（偶数設定示唆）</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="end-uchu">
+                            <label for="end-uchu">宇宙飛行士（設定2以上＋高設定示唆）</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="end-win">
+                            <label for="end-win">ウィンちゃん（設定6濃厚）</label>
+                        </div>
+                    </div>
+
+                    <h4 style="color: var(--gold-color); margin: 15px 0;">ケロットトロフィー</h4>
+                    <div class="input-group">
+                        <select id="trophy">
+                            <option value="none">なし</option>
+                            <option value="bronze">銅（設定2以上濃厚）</option>
+                            <option value="gold">金（設定4以上濃厚）</option>
+                            <option value="kerot">ケロット柄（設定5以上濃厚）</option>
+                            <option value="rainbow">虹（設定6濃厚）</option>
+                        </select>
+                    </div>
+
+                    <h4 style="color: var(--gold-color); margin: 15px 0;">獲得枚数表示</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="medal-456">
+                            <label for="medal-456">456枚OVER（設定4以上濃厚）</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="medal-666">
+                            <label for="medal-666">666枚OVER（設定6濃厚）</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="medal-803">
+                            <label for="medal-803">803枚OVER（設定6濃厚）</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="collapsible">🚀 ランプ・演出（クリックで開く）</button>
+                <div class="collapsible-content">
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="kerot-lamp">
+                            <label for="kerot-lamp">ケロットランプ点灯（モードE濃厚）</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="planet-lamp">
+                            <label for="planet-lamp">プラネットランプ点滅（フリーズ前兆/モードC）</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="white-hole">
+                            <label for="white-hole">ホワイトホール演出（BB濃厚＋次回モードE濃厚）</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="delay-30g">
+                            <label for="delay-30g">30G以内に第3停止遅れ2回（高確濃厚）</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="collapsible">📍 現在の状況（クリックで開く）</button>
+                <div class="collapsible-content">
+                    <div class="input-group">
+                        <label for="current-g">ボーナス間ゲーム数</label>
+                        <input type="number" id="current-g" placeholder="例: 250" min="0">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="early-bonus">100G以内のボーナス回数</label>
+                        <input type="number" id="early-bonus" placeholder="例: 2" min="0">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="is-reset">朝一リセット台</label>
+                        <select id="is-reset">
+                            <option value="unknown">不明</option>
+                            <option value="yes">はい（モードF）</option>
+                            <option value="no">いいえ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button onclick="analyze()" style="margin-top: 20px;">🌟 設定・モード推測を実行</button>
+                <button onclick="resetAll()" style="background: rgba(0, 66, 166, 0.8);">🔄 リセット</button>
+            </div>
+
+            <div class="result-section">
+                <h2 class="section-title">📈 推測結果</h2>
+                <div id="results">
+                    <div class="result-box">
+                        <div class="result-content">データを入力して「設定・モード推測を実行」ボタンを押してください</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 星空エフェクト生成
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        createStars();
+
+        // ボーナス合算の自動計算
+        document.getElementById('bb-count').addEventListener('input', updateBonusTotal);
+        document.getElementById('rb-count').addEventListener('input', updateBonusTotal);
+
+        function updateBonusTotal() {
+            const bb = parseInt(document.getElementById('bb-count').value) || 0;
+            const rb = parseInt(document.getElementById('rb-count').value) || 0;
+            document.getElementById('bonus-total').value = bb + rb;
+        }
+
+        // 設定別データ
+        const settingData = {
+            1: { bbRate: 1/280.4, rbRate: 1/596.7, bonusRate: 1/190.8, payout: 97.6 },
+            2: { bbRate: 1/273.4, rbRate: 1/584.1, bonusRate: 1/186.2, payout: 99.0 },
+            4: { bbRate: 1/247.3, rbRate: 1/553.6, bonusRate: 1/171.0, payout: 104.0 },
+            5: { bbRate: 1/232.2, rbRate: 1/526.4, bonusRate: 1/161.1, payout: 108.5 },
+            6: { bbRate: 1/210.5, rbRate: 1/504.2, bonusRate: 1/148.5, payout: 114.2 }
+        };
+
+        // 折りたたみ機能
+        const collapsibles = document.querySelectorAll('.collapsible');
+        collapsibles.forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                content.classList.toggle('show');
+            });
+        });
+
+        function analyze() {
+            const games = parseInt(document.getElementById('games').value) || 0;
+            const bbCount = parseInt(document.getElementById('bb-count').value) || 0;
+            const rbCount = parseInt(document.getElementById('rb-count').value) || 0;
+            const bonusTotal = bbCount + rbCount;
+            const currentG = parseInt(document.getElementById('current-g').value) || 0;
+            const earlyBonus = parseInt(document.getElementById('early-bonus').value) || 0;
+            const isReset = document.getElementById('is-reset').value;
+            const const101 = document.getElementById('constellation-101').value;
+            const const301 = document.getElementById('constellation-301').value;
+
+            if (games === 0) {
+                alert('ゲーム数を入力してください');
+                return;
+            }
+
+            // 設定推測スコア計算
+            const scores = { 1: 100, 2: 100, 4: 100, 5: 100, 6: 100 };
+            
+            // ボーナス確率による評価
+            if (bonusTotal > 0) {
+                const actualRate = games / bonusTotal;
+                for (let setting of [1, 2, 4, 5, 6]) {
+                    const expectedRate = 1 / settingData[setting].bonusRate;
+                    const diff = Math.abs(actualRate - expectedRate);
+                    scores[setting] -= diff * 0.15;
+                }
+            }
+
+            // BB/RB比率による評価
+            if (bbCount > 0 && rbCount > 0) {
+                const actualBbRate = games / bbCount;
+                const actualRbRate = games / rbCount;
+                for (let setting of [1, 2, 4, 5, 6]) {
+                    const expectedBbRate = 1 / settingData[setting].bbRate;
+                    const expectedRbRate = 1 / settingData[setting].rbRate;
+                    const bbDiff = Math.abs(actualBbRate - expectedBbRate);
+                    const rbDiff = Math.abs(actualRbRate - expectedRbRate);
+                    scores[setting] -= (bbDiff + rbDiff) * 0.08;
+                }
+            }
+
+            // 示唆演出による評価
+            if (document.getElementById('end-eisei').checked) {
+                scores[2] += 20; scores[4] += 20; scores[6] += 20;
+            }
+            if (document.getElementById('end-uchu').checked) {
+                scores[1] -= 50; scores[4] += 15; scores[5] += 20; scores[6] += 25;
+            }
+            if (document.getElementById('end-win').checked) {
+                scores[6] += 100;
+            }
+
+            // トロフィー
+            const trophy = document.getElementById('trophy').value;
+            if (trophy === 'bronze') { scores[1] -= 50; scores[2] += 20; }
+            if (trophy === 'gold') { scores[1] -= 50; scores[2] -= 50; scores[4] += 30; }
+            if (trophy === 'kerot') { scores[1] -= 50; scores[2] -= 50; scores[4] -= 30; scores[5] += 40; }
+            if (trophy === 'rainbow') { scores[6] += 100; }
+
+            // 獲得枚数表示
+            if (document.getElementById('medal-456').checked) {
+                scores[1] -= 50; scores[2] -= 50; scores[4] += 30;
+            }
+            if (document.getElementById('medal-666').checked || document.getElementById('medal-803').checked) {
+                scores[6] += 80;
+            }
+
+            // 星座による評価
+            if (const101 === 'rino' || const301 === 'rino') {
+                scores[1] -= 50; scores[2] -= 50; scores[4] += 40;
+            }
+            if (const101 === 'kerot' || const301 === 'kerot') {
+                scores[6] += 100;
+            }
+
+            // スコアを正規化（確率に変換）
+            const maxScore = Math.max(...Object.values(scores));
+            const minScore = Math.min(...Object.values(scores));
+            const range = maxScore - minScore || 1;
+
+            const probabilities = {};
+            let totalProb = 0;
+            for (let setting of [1, 2, 4, 5, 6]) {
+                probabilities[setting] = Math.exp((scores[setting] - minScore) / range * 2);
+                totalProb += probabilities[setting];
+            }
+
+            // 確率を正規化
+            for (let setting of [1, 2, 4, 5, 6]) {
+                probabilities[setting] = (probabilities[setting] / totalProb * 100).toFixed(1);
+            }
+
+            // 最も可能性の高い設定を特定
+            const mostLikely = Object.entries(probabilities).reduce((a, b) => 
+                parseFloat(a[1]) > parseFloat(b[1]) ? a : b
+            )[0];
+
+            // モード推測
+            let modeAnalysis = analyzeModes(const101, const301, earlyBonus, bonusTotal, 
+                document.getElementById('kerot-lamp').checked,
+                document.getElementById('planet-lamp').checked,
+                document.getElementById('white-hole').checked,
+                isReset);
+
+            // やめどき判定
+            let quitAdvice = generateQuitAdvice(currentG, modeAnalysis, isReset);
+
+            // 結果表示
+            displayResults(probabilities, mostLikely, games, bonusTotal, modeAnalysis, quitAdvice);
+        }
+
+        function analyzeModes(const101, const301, earlyBonus, bonusTotal, kerotLamp, planetLamp, whiteHole, isReset) {
+            let modes = {
+                A: 30,
+                B: 20,
+                C: 20,
+                D: 15,
+                E: 10,
+                F: isReset === 'yes' ? 50 : 5
+            };
+
+            // 星座によるモード評価
+            if (const101 === 'tenbin' || const301 === 'tenbin') {
+                modes.C += 50; modes.A -= 20; modes.B -= 20;
+            }
+            if (const101 === 'pegasus' || const301 === 'pegasus') {
+                modes.D += 40; modes.E += 40; modes.A -= 30; modes.B -= 20; modes.C -= 30;
+            }
+            if (const101 === 'ohituji' || const301 === 'ohituji' || 
+                const101 === 'kani' || const301 === 'kani') {
+                modes.B += 30; modes.A -= 10;
+            }
+            if (const101 === 'oushi' || const301 === 'oushi') {
+                modes.B += 40; modes.A -= 15;
+            }
+            if (const101 === 'koto' || const301 === 'koto') {
+                modes.B += 30; modes.C += 20; modes.D += 15; modes.E += 10; modes.A -= 40;
+            }
+
+            // ランプによる評価
+            if (kerotLamp) {
+                modes.E += 60; modes.D -= 10; modes.A -= 30; modes.B -= 20; modes.C -= 20;
+            }
+            if (planetLamp) {
+                modes.C += 30; modes.A -= 10;
+            }
+            if (whiteHole) {
+                modes.E += 50; modes.D += 30;
+            }
+
+            // 早い当たりによる評価
+            if (earlyBonus > 0 && bonusTotal > 0) {
+                const earlyRate = earlyBonus / bonusTotal;
+                if (earlyRate > 0.5) {
+                    modes.D += 30; modes.E += 40;
+                } else if (earlyRate > 0.3) {
+                    modes.D += 20; modes.E += 20;
+                }
+            }
+
+            // 最も可能性の高いモードを特定
+            const totalMode = Object.values(modes).reduce((a, b) => a + b, 0);
+            for (let mode in modes) {
+                modes[mode] = Math.max(0, modes[mode]);
+                modes[mode] = ((modes[mode] / totalMode) * 100).toFixed(1);
+            }
+
+            return modes;
+        }
+
+        function generateQuitAdvice(currentG, modeAnalysis, isReset) {
+            let advice = [];
+            let shouldContinue = false;
+
+            // 現在のゲーム数による判定
+            if (currentG <= 100) {
+                advice.push("🌟 100G以内：約50%でボーナス当選の可能性");
+                advice.push("📍 101Gでサブ液晶タッチで星座確認推奨");
+                shouldContinue = true;
+            } else if (currentG >= 600) {
+                advice.push("⚠️ 600G以上：天井（777G）まで続行推奨");
+                shouldContinue = true;
+            }
+
+            // モードによる判定
+            const modeD = parseFloat(modeAnalysis.D);
+            const modeE = parseFloat(modeAnalysis.E);
+            const modeC = parseFloat(modeAnalysis.C);
+            
+            if (modeD >= 30 || modeE >= 30) {
+                advice.push("🚀 モードD/E滞在の可能性大：連チャンモード期待");
+                shouldContinue = true;
+            } else if (modeC >= 40) {
+                advice.push("💫 モードC濃厚：モードEへの移行に期待（約50%）");
+            }
+
+            // リセット判定
+            if (isReset === 'yes') {
+                advice.push("🔄 リセット台：ボーナス後モードB以上確定");
+                if (currentG <= 500) {
+                    advice.push("📊 天井500Gに短縮");
+                }
+            }
+
+            // 総合判定
+            if (shouldContinue) {
+                advice.unshift("✅ 続行推奨");
+            } else if (currentG <= 101) {
+                advice.unshift("⏸️ 101Gの星座確認後に判断");
+            } else {
+                advice.unshift("⏹️ やめどき候補");
+            }
+
+            return advice;
+        }
+
+        function displayResults(probabilities, mostLikely, games, bonusTotal, modeAnalysis, quitAdvice) {
+            const resultsDiv = document.getElementById('results');
+            
+            // 設定3は存在しないため除外
+            const settings = [1, 2, 4, 5, 6];
+            
+            let html = `
+                <div class="setting-meter">
+                    ${settings.map(s => `
+                        <div class="setting-item ${s == mostLikely ? 'highlight' : ''}">
+                            <div class="setting-value">設定${s}</div>
+                            <div class="setting-prob">${probabilities[s] || '0'}%</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title">📊 実戦データ分析</div>
+                    <div class="result-content">
+                        ボーナス合算: ${bonusTotal > 0 ? `1/${(games/bonusTotal).toFixed(1)}` : '---'}<br>
+                        総ゲーム数: ${games}G
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title">🌟 設定推測結果</div>
+                    <div class="result-content">
+                        <strong style="font-size: 1.2em; color: var(--gold-color);">
+                            最有力候補: 設定${mostLikely} (${probabilities[mostLikely]}%)
+                        </strong><br>
+                        <span class="indicator ${probabilities[mostLikely] >= 30 ? 'high' : probabilities[mostLikely] >= 20 ? 'medium' : 'low'}"></span>
+                        信頼度: ${probabilities[mostLikely] >= 30 ? '高' : probabilities[mostLikely] >= 20 ? '中' : '低'}
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title">🚀 モード推測結果</div>
+                    <div class="mode-display">
+                        ${Object.entries(modeAnalysis).map(([mode, prob]) => `
+                            <div class="mode-item ${parseFloat(prob) >= 25 ? 'likely' : ''}">
+                                <div style="font-weight: bold;">モード${mode}</div>
+                                <div>${prob}%</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="advice-section">
+                    <div class="advice-title">やめどき判断</div>
+                    <div class="advice-content">
+                        ${quitAdvice.map((advice, i) => 
+                            `${i === 0 ? `<strong style="font-size: 1.2em;">${advice}</strong>` : advice}<br>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function resetAll() {
+            if (confirm('すべての入力データをリセットしますか？')) {
+                document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+                document.getElementById('results').innerHTML = `
+                    <div class="result-box">
+                        <div class="result-content">データを入力して「設定・モード推測を実行」ボタンを押してください</div>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
