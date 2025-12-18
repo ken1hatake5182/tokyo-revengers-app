@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スロット化物語 設定推測ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #ff6b9d;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #a0c4ff;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #ffd700;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #a0c4ff;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #ff6b9d;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .results {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .setting-1 { background: rgba(128, 128, 128, 0.2); border-color: #808080; }
+        .setting-2 { background: rgba(0, 255, 0, 0.2); border-color: #00ff00; }
+        .setting-3 { background: rgba(0, 191, 255, 0.2); border-color: #00bfff; }
+        .setting-4 { background: rgba(255, 215, 0, 0.2); border-color: #ffd700; }
+        .setting-5 { background: rgba(255, 140, 0, 0.2); border-color: #ff8c00; }
+        .setting-6 { background: rgba(255, 0, 0, 0.2); border-color: #ff0000; }
+
+        .probability {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: #a0c4ff;
+            margin-top: 5px;
+        }
+
+        .judge-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .judge-label {
+            color: #a0c4ff;
+        }
+
+        .judge-result {
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 5px;
+        }
+
+        .judge-good {
+            background: rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+        }
+
+        .judge-bad {
+            background: rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+        }
+
+        .judge-normal {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ending-screen-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .ending-btn {
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ending-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .ending-btn.selected {
+            background: #ff6b9d;
+            border-color: #ff6b9d;
+        }
+
+        .trophy-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .trophy-btn {
+            padding: 8px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .trophy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .trophy-btn.selected {
+            background: #ffd700;
+            border-color: #ffd700;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 スロット化物語 設定推測ツール</h1>
+            <p>実戦データを入力して設定を推測しよう！</p>
+        </div>
+
+        <!-- 基本データ入力 -->
+        <div class="section">
+            <div class="section-title">🎰 基本データ</div>
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>総回転数</label>
+                    <input type="number" id="totalGames" placeholder="例: 3000">
+                </div>
+                <div class="input-group">
+                    <label>現在ゲーム数</label>
+                    <input type="number" id="currentGames" placeholder="例: 450">
+                </div>
+            </div>
+        </div>
+
+        <!-- AT・解呪ノ儀データ -->
+        <div class="section">
+            <div class="section-title">✨ AT・CZ実績</div>
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>AT初当たり回数</label>
+                    <input type="number" id="atCount" placeholder="例: 5">
+                </div>
+                <div class="input-group">
+                    <label>解呪ノ儀突入回数</label>
+                    <input type="number" id="czCount" placeholder="例: 12">
+                </div>
+            </div>
+        </div>
+
+        <!-- 小役カウント -->
+        <div class="section">
+            <div class="section-title">🎲 小役カウント（通常時のみ）</div>
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>スイカ出現回数</label>
+                    <input type="number" id="suikaCount" placeholder="例: 35">
+                </div>
+                <div class="input-group">
+                    <label>弱チェリー出現回数（通常時のみ）</label>
+                    <input type="number" id="weakCherryCount" placeholder="例: 25">
+                </div>
+            </div>
+            <div class="input-group" style="margin-top: 15px;">
+                <label>弱チェリーからのAT直撃回数</label>
+                <input type="number" id="directAtCount" placeholder="例: 1">
+            </div>
+        </div>
+
+        <!-- 設定示唆演出 -->
+        <div class="section">
+            <div class="section-title">🎭 設定示唆演出</div>
+            
+            <div class="input-group">
+                <label>AT終了画面（複数選択可）</label>
+                <div class="ending-screen-buttons">
+                    <button class="ending-btn" data-screen="koyomi">こよみ</button>
+                    <button class="ending-btn" data-screen="hitagi">ひたぎ</button>
+                    <button class="ending-btn" data-screen="mayoi">まよい</button>
+                    <button class="ending-btn" data-screen="suruga">するが</button>
+                    <button class="ending-btn" data-screen="nadeko">なでこ</button>
+                    <button class="ending-btn" data-screen="tsubasa">つばさ</button>
+                    <button class="ending-btn" data-screen="shinobu">しのぶ</button>
+                    <button class="ending-btn" data-screen="oshino">忍野</button>
+                    <button class="ending-btn" data-screen="panel1">初代パネル(暦忍野)</button>
+                    <button class="ending-btn" data-screen="panel2">初代パネル(ヒロイン)</button>
+                    <button class="ending-btn" data-screen="iloveyou">I LOVE YOU</button>
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-top: 20px;">
+                <label>サミートロフィー出現</label>
+                <div class="trophy-buttons">
+                    <button class="trophy-btn" data-trophy="bronze">銅</button>
+                    <button class="trophy-btn" data-trophy="silver">銀</button>
+                    <button class="trophy-btn" data-trophy="gold">金</button>
+                    <button class="trophy-btn" data-trophy="kirin">キリン柄</button>
+                    <button class="trophy-btn" data-trophy="rainbow">虹</button>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 20px;">
+                <div class="input-group">
+                    <label>獲得枚数表示（174枚/543枚/331枚）</label>
+                    <input type="text" id="maisuDisplay" placeholder="例: 174">
+                </div>
+                <div class="input-group">
+                    <label>ボーナス確定画面「しのぶ」→赤7</label>
+                    <input type="number" id="shinobuRed7" placeholder="例: 1">
+                </div>
+            </div>
+        </div>
+
+        <!-- ボタン -->
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="calculateSetting()">📊 設定推測</button>
+            <button class="btn btn-secondary" onclick="resetData()">🔄 リセット</button>
+        </div>
+
+        <!-- 結果表示 -->
+        <div id="results" style="display: none;">
+            <div class="section">
+                <div class="section-title">📈 推測結果</div>
+                <div class="results">
+                    <div id="settingResults"></div>
+                    <div style="margin-top: 20px;">
+                        <h3 style="color: #ffd700; margin-bottom: 10px;">各要素の判定</h3>
+                        <div id="judgements"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedScreens = [];
+        let selectedTrophy = null;
+
+        // 終了画面ボタンのイベント
+        document.querySelectorAll('.ending-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const screen = this.getAttribute('data-screen');
+                if (selectedScreens.includes(screen)) {
+                    selectedScreens = selectedScreens.filter(s => s !== screen);
+                    this.classList.remove('selected');
+                } else {
+                    selectedScreens.push(screen);
+                    this.classList.add('selected');
+                }
+            });
+        });
+
+        // トロフィーボタンのイベント
+        document.querySelectorAll('.trophy-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.trophy-btn').forEach(b => b.classList.remove('selected'));
+                const trophy = this.getAttribute('data-trophy');
+                if (selectedTrophy === trophy) {
+                    selectedTrophy = null;
+                } else {
+                    selectedTrophy = trophy;
+                    this.classList.add('selected');
+                }
+            });
+        });
+
+        function calculateSetting() {
+            const totalGames = parseInt(document.getElementById('totalGames').value) || 0;
+            const atCount = parseInt(document.getElementById('atCount').value) || 0;
+            const czCount = parseInt(document.getElementById('czCount').value) || 0;
+            const suikaCount = parseInt(document.getElementById('suikaCount').value) || 0;
+            const weakCherryCount = parseInt(document.getElementById('weakCherryCount').value) || 0;
+            const directAtCount = parseInt(document.getElementById('directAtCount').value) || 0;
+            const maisuDisplay = document.getElementById('maisuDisplay').value;
+            const shinobuRed7 = parseInt(document.getElementById('shinobuRed7').value) || 0;
+
+            if (totalGames === 0) {
+                alert('総回転数を入力してください');
+                return;
+            }
+
+            // 各設定の期待値データ
+            const settingData = {
+                1: { at: 265.1, cz: 93.0, suika: 87.4, weakCherry: 150 },
+                2: { at: 260.7, cz: 88.8, suika: 85, weakCherry: 145 },
+                3: { at: 252.1, cz: 85.3, suika: 82, weakCherry: 140 },
+                4: { at: 238.8, cz: 81.0, suika: 78, weakCherry: 135 },
+                5: { at: 230.8, cz: 76.5, suika: 75, weakCherry: 130 },
+                6: { at: 219.6, cz: 61.4, suika: 69.9, weakCherry: 120 }
+            };
+
+            // 実測確率
+            const atProb = atCount > 0 ? totalGames / atCount : 0;
+            const czProb = czCount > 0 ? totalGames / czCount : 0;
+            const suikaProb = suikaCount > 0 ? totalGames / suikaCount : 0;
+            const weakCherryProb = weakCherryCount > 0 ? totalGames / weakCherryCount : 0;
+
+            // スコアリング
+            let scores = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+            let judgements = [];
+
+            // AT確率評価
+            if (atCount > 0) {
+                for (let setting in settingData) {
+                    const diff = Math.abs(atProb - settingData[setting].at);
+                    scores[setting] += Math.max(0, 100 - diff);
+                }
+                let atJudge = 'normal';
+                let atText = '標準的';
+                if (atProb < 240) {
+                    atJudge = 'good';
+                    atText = '高設定の期待大！';
+                } else if (atProb > 260) {
+                    atJudge = 'bad';
+                    atText = '低設定の可能性';
+                }
+                judgements.push({ 
+                    label: 'AT初当たり確率', 
+                    value: `1/${atProb.toFixed(1)}`, 
+                    judge: atJudge,
+                    text: atText
+                });
+            }
+
+            // CZ確率評価
+            if (czCount > 0) {
+                for (let setting in settingData) {
+                    const diff = Math.abs(czProb - settingData[setting].cz);
+                    scores[setting] += Math.max(0, 100 - diff * 1.5);
+                }
+                let czJudge = 'normal';
+                let czText = '標準的';
+                if (czProb < 80) {
+                    czJudge = 'good';
+                    czText = '高設定示唆';
+                } else if (czProb > 90) {
+                    czJudge = 'bad';
+                    czText = '低設定の可能性';
+                }
+                judgements.push({ 
+                    label: '解呪ノ儀確率', 
+                    value: `1/${czProb.toFixed(1)}`, 
+                    judge: czJudge,
+                    text: czText
+                });
+            }
+
+            // スイカ確率評価
+            if (suikaCount > 0) {
+                for (let setting in settingData) {
+                    const diff = Math.abs(suikaProb - settingData[setting].suika);
+                    scores[setting] += Math.max(0, 100 - diff * 2);
+                }
+                let suikaJudge = 'normal';
+                let suikaText = '標準的';
+                if (suikaProb < 75) {
+                    suikaJudge = 'good';
+                    suikaText = '高設定の期待！';
+                } else if (suikaProb > 85) {
+                    suikaJudge = 'bad';
+                    suikaText = '低設定の可能性';
+                }
+                judgements.push({ 
+                    label: 'スイカ出現率', 
+                    value: `1/${suikaProb.toFixed(1)}`, 
+                    judge: suikaJudge,
+                    text: suikaText
+                });
+            }
+
+            // 弱チェリー確率評価
+            if (weakCherryCount > 0) {
+                for (let setting in settingData) {
+                    const diff = Math.abs(weakCherryProb - settingData[setting].weakCherry);
+                    scores[setting] += Math.max(0, 100 - diff * 1.5);
+                }
+                let cherryJudge = 'normal';
+                let cherryText = '標準的';
+                if (weakCherryProb < 130) {
+                    cherryJudge = 'good';
+                    cherryText = '高設定示唆';
+                } else if (weakCherryProb > 145) {
+                    cherryJudge = 'bad';
+                    cherryText = '低設定の可能性';
+                }
+                judgements.push({ 
+                    label: '弱チェリー出現率', 
+                    value: `1/${weakCherryProb.toFixed(1)}`, 
+                    judge: cherryJudge,
+                    text: cherryText
+                });
+            }
+
+            // 弱チェリー直撃評価
+            if (directAtCount > 0) {
+                scores[4] += 50;
+                scores[5] += 80;
+                scores[6] += 100;
+                judgements.push({ 
+                    label: '弱チェリー直撃', 
+                    value: `${directAtCount}回`, 
+                    judge: 'good',
+                    text: '高設定の期待大！'
+                });
+            }
+
+            // 終了画面評価
+            if (selectedScreens.includes('iloveyou')) {
+                scores[6] += 200;
+                judgements.push({ label: 'AT終了画面', value: 'I LOVE YOU', judge: 'good', text: '設定6濃厚！' });
+            } else if (selectedScreens.includes('panel2')) {
+                scores[5] += 150;
+                scores[6] += 150;
+                judgements.push({ label: 'AT終了画面', value: '初代パネル(ヒロイン)', judge: 'good', text: '設定5以上濃厚！' });
+            } else if (selectedScreens.includes('panel1')) {
+                scores[4] += 100;
+                scores[5] += 100;
+                scores[6] += 100;
+                judgements.push({ label: 'AT終了画面', value: '初代パネル(暦忍野)', judge: 'good', text: '設定4以上濃厚！' });
+            } else if (selectedScreens.includes('shinobu')) {
+                scores[2] += 80;
+                scores[4] += 80;
+                scores[6] += 80;
+                judgements.push({ label: 'AT終了画面', value: 'しのぶ', judge: 'good', text: '偶数設定濃厚' });
+            } else if (selectedScreens.includes('oshino')) {
+                scores[3] += 60;
+                scores[5] += 60;
+                scores[6] += 60;
+                judgements.push({ label: 'AT終了画面', value: '忍野', judge: 'good', text: '設定1,2,4否定' });
+            }
+
+            // トロフィー評価
+            if (selectedTrophy === 'rainbow') {
+                scores[6] += 200;
+                judgements.push({ label: 'サミートロフィー', value: '虹', judge: 'good', text: '設定6濃厚！' });
+            } else if (selectedTrophy === 'kirin') {
+                scores[5] += 150;
+                scores[6] += 150;
+                judgements.push({ label: 'サミートロフィー', value: 'キリン柄', judge: 'good', text: '設定5以上濃厚！' });
+            } else if (selectedTrophy === 'gold') {
+                scores[4] += 100;
+                scores[5] += 100;
+                scores[6] += 100;
+                judgements.push({ label: 'サミートロフィー', value: '金', judge: 'good', text: '設定4以上濃厚！' });
+            } else if (selectedTrophy === 'silver') {
+                scores[3] += 80;
+                scores[4] += 80;
+                scores[5] += 80;
+                scores[6] += 80;
+                judgements.push({ label: 'サミートロフィー', value: '銀', judge: 'good', text: '設定3以上濃厚！' });
+            } else if (selectedTrophy === 'bronze') {
+                for (let i = 2; i <= 6; i++) scores[i] += 50;
+                judgements.push({ label: 'サミートロフィー', value: '銅', judge: 'good', text: '設定2以上濃厚！' });
+            }
+
+            // 獲得枚数表示評価
+            if (maisuDisplay === '331') {
+                scores[6] += 200;
+                judgements.push({ label: '獲得枚数表示', value: '331枚', judge: 'good', text: '設定6濃厚！' });
+            } else if (maisuDisplay === '543') {
+                scores[3] += 100;
+                scores[4] += 100;
+                scores[5] += 100;
+                scores[6] += 100;
+                judgements.push({ label: '獲得枚数表示', value: '543枚', judge: 'good', text: '設定3以上濃厚！' });
+            } else if (maisuDisplay === '174') {
+                for (let i = 2; i <= 6; i++) scores[i] += 50;
+                judgements.push({ label: '獲得枚数表示', value: '174枚', judge: 'good', text: '設定2以上濃厚！' });
+            }
+
+            // ボーナス確定画面評価
+            if (shinobuRed7 > 0) {
+                scores[5] += 150;
+                scores[6] += 150;
+                judgements.push({ 
+                    label: 'ボーナス確定画面', 
+                    value: 'しのぶ→赤7', 
+                    judge: 'good', 
+                    text: '設定5以上濃厚！' 
+                });
+            }
+
+            // スコアの正規化と表示
+            const maxScore = Math.max(...Object.values(scores));
+            let resultsHTML = '';
+            
+            for (let setting = 6; setting >= 1; setting--) {
+                const percentage = maxScore > 0 ? (scores[setting] / maxScore * 100).toFixed(1) : 0;
+                resultsHTML += `
+                    <div class="result-item setting-${setting}">
+                        <h3>設定${setting}</h3>
+                        <div class="probability">信頼度: ${percentage}%</div>
+                        <div class="info-text">
+                            期待AT確率: 1/${settingData[setting].at} | 
+                            期待CZ確率: 1/${settingData[setting].cz}
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('settingResults').innerHTML = resultsHTML;
+
+            // 判定結果表示
+            let judgementsHTML = '';
+            judgements.forEach(j => {
+                judgementsHTML += `
+                    <div class="judge-item">
+                        <div>
+                            <div class="judge-label">${j.label}</div>
+                            <div style="color: #fff; margin-top: 3px;">${j.value}</div>
+                        </div>
+                        <div class="judge-result judge-${j.judge}">${j.text}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('judgements').innerHTML = judgementsHTML;
+            document.getElementById('results').style.display = 'block';
+
+            // 結果までスクロール
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetData() {
+            if (confirm('入力データをすべてリセットしますか？')) {
+                document.querySelectorAll('input').forEach(input => input.value = '');
+                document.querySelectorAll('.ending-btn').forEach(btn => btn.classList.remove('selected'));
+                document.querySelectorAll('.trophy-btn').forEach(btn => btn.classList.remove('selected'));
+                selectedScreens = [];
+                selectedTrophy = null;
+                document.getElementById('results').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
