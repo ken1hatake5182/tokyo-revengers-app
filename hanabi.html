@@ -316,7 +316,7 @@
             <div class="input-row">
                 <div class="input-label">総回転数</div>
                 <div class="input-group">
-                    <input type="number" id="totalGames" placeholder="例: 3000" oninput="calculate()">
+                    <input type="number" id="totalGames" placeholder="例: 3000">
                 </div>
                 <div class="result-display" id="totalGamesDisplay">-</div>
             </div>
@@ -328,14 +328,14 @@
             <div class="input-row">
                 <div class="input-label">BB回数</div>
                 <div class="input-group">
-                    <input type="number" id="bbCount" placeholder="例: 10" oninput="calculate()">
+                    <input type="number" id="bbCount" placeholder="例: 10">
                 </div>
                 <div class="result-display" id="bbProb">-</div>
             </div>
             <div class="input-row">
                 <div class="input-label">RB回数</div>
                 <div class="input-group">
-                    <input type="number" id="rbCount" placeholder="例: 8" oninput="calculate()">
+                    <input type="number" id="rbCount" placeholder="例: 8">
                 </div>
                 <div class="result-display" id="rbProb">-</div>
             </div>
@@ -352,14 +352,14 @@
             <div class="input-row">
                 <div class="input-label">風鈴A <span class="info-badge">重要</span></div>
                 <div class="input-group">
-                    <input type="number" id="furinA" placeholder="例: 230" oninput="calculate()">
+                    <input type="number" id="furinA" placeholder="例: 230">
                 </div>
                 <div class="result-display" id="furinAProb">-</div>
             </div>
             <div class="input-row">
                 <div class="input-label">風鈴B</div>
                 <div class="input-group">
-                    <input type="number" id="furinB" placeholder="例: 80" oninput="calculate()">
+                    <input type="number" id="furinB" placeholder="例: 80">
                 </div>
                 <div class="result-display" id="furinBProb">-</div>
             </div>
@@ -371,28 +371,28 @@
             <div class="input-row">
                 <div class="input-label">氷A</div>
                 <div class="input-group">
-                    <input type="number" id="kooriA" placeholder="例: 65" oninput="calculate()">
+                    <input type="number" id="kooriA" placeholder="例: 65">
                 </div>
                 <div class="result-display" id="kooriAProb">-</div>
             </div>
             <div class="input-row">
                 <div class="input-label">チェリーA1</div>
                 <div class="input-group">
-                    <input type="number" id="cherryA1" placeholder="例: 30" oninput="calculate()">
+                    <input type="number" id="cherryA1" placeholder="例: 30">
                 </div>
                 <div class="result-display" id="cherryA1Prob">-</div>
             </div>
             <div class="input-row">
                 <div class="input-label">チェリーA2</div>
                 <div class="input-group">
-                    <input type="number" id="cherryA2" placeholder="例: 150" oninput="calculate()">
+                    <input type="number" id="cherryA2" placeholder="例: 150">
                 </div>
                 <div class="result-display" id="cherryA2Prob">-</div>
             </div>
             <div class="input-row">
                 <div class="input-label">チェリーB</div>
                 <div class="input-group">
-                    <input type="number" id="cherryB" placeholder="例: 10" oninput="calculate()">
+                    <input type="number" id="cherryB" placeholder="例: 10">
                 </div>
                 <div class="result-display" id="cherryBProb">-</div>
             </div>
@@ -404,13 +404,13 @@
             <div class="input-row">
                 <div class="input-label">BB中 斜め風鈴出現回数</div>
                 <div class="input-group">
-                    <input type="number" id="bbNanameFurin" placeholder="例: 5" oninput="calculate()">
+                    <input type="number" id="bbNanameFurin" placeholder="例: 5">
                 </div>
                 <div class="result-display" id="bbNanameFurinDisplay">-</div>
             </div>
             <div class="special-flags">
                 <div class="flag-item">
-                    <input type="checkbox" id="bbBarake" onchange="calculate()">
+                    <input type="checkbox" id="bbBarake">
                     <label for="bbBarake">BB中バラケ目出現（設定5以上濃厚！）</label>
                 </div>
             </div>
@@ -422,17 +422,17 @@
             <div class="input-row">
                 <div class="input-label">RB中 1枚役出現回数</div>
                 <div class="input-group">
-                    <input type="number" id="rb1mai" placeholder="例: 15" oninput="calculate()">
+                    <input type="number" id="rb1mai" placeholder="例: 15">
                 </div>
                 <div class="result-display" id="rb1maiDisplay">-</div>
             </div>
             <div class="special-flags">
                 <div class="flag-item">
-                    <input type="checkbox" id="rbBarake" onchange="calculate()">
+                    <input type="checkbox" id="rbBarake">
                     <label for="rbBarake">RB中バラケ目出現（設定6濃厚！）</label>
                 </div>
                 <div class="flag-item">
-                    <input type="checkbox" id="rbPeace" onchange="calculate()">
+                    <input type="checkbox" id="rbPeace">
                     <label for="rbPeace">RB終了画面ピースマーク（設定2以上濃厚！）</label>
                 </div>
             </div>
@@ -492,7 +492,7 @@
             const totalGames = parseInt(document.getElementById('totalGames').value) || 0;
             
             if (totalGames === 0) {
-                document.getElementById('results').style.display = 'none';
+                alert('総回転数を入力してください');
                 return;
             }
 
@@ -701,7 +701,11 @@
 
             document.getElementById('judgeBox').innerHTML = judgeHTML;
             document.getElementById('results').style.display = 'block';
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            
+            // ボタンを押したときだけスクロール
+            setTimeout(() => {
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
         }
 
         function resetAll() {
