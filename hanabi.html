@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スマスロ ハナビ 設定推測ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+            background: linear-gradient(135deg, #1a0a0a 0%, #2d1414 50%, #1a0505 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 100, 100, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #ffcccb;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #ffd700;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 200px 150px 150px;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .input-label {
+            color: #ffcccb;
+            font-size: 14px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .input-group input {
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .result-display {
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #666 0%, #888 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(136, 136, 136, 0.4);
+        }
+
+        .results {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-left: 5px solid;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .setting-1 { border-color: #808080; }
+        .setting-2 { border-color: #00ff00; }
+        .setting-5 { border-color: #ffa500; }
+        .setting-6 { border-color: #ff0000; }
+
+        .probability {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b 0%, #ffd700 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .detail-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .special-flags {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .flag-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .flag-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .flag-item label {
+            color: #ffd700;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 5px;
+            font-size: 12px;
+            color: #ffd700;
+            margin-left: 10px;
+        }
+
+        .judge-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .judge-title {
+            font-size: 18px;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .judge-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .judge-good {
+            background: rgba(0, 255, 0, 0.2);
+            border-left: 3px solid #00ff00;
+        }
+
+        .judge-bad {
+            background: rgba(255, 0, 0, 0.2);
+            border-left: 3px solid #ff0000;
+        }
+
+        .judge-normal {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎆 スマスロ ハナビ 設定推測ツール</h1>
+            <p>小役確率・ボーナス確率を入力してリアルタイムで設定を推測！</p>
+        </div>
+
+        <!-- 基本データ -->
+        <div class="section">
+            <div class="section-title">🎰 基本データ</div>
+            <div class="input-row">
+                <div class="input-label">総回転数</div>
+                <div class="input-group">
+                    <input type="number" id="totalGames" placeholder="例: 3000" oninput="calculate()">
+                </div>
+                <div class="result-display" id="totalGamesDisplay">-</div>
+            </div>
+        </div>
+
+        <!-- ボーナス確率 -->
+        <div class="section">
+            <div class="section-title">🎊 ボーナス確率</div>
+            <div class="input-row">
+                <div class="input-label">BB回数</div>
+                <div class="input-group">
+                    <input type="number" id="bbCount" placeholder="例: 10" oninput="calculate()">
+                </div>
+                <div class="result-display" id="bbProb">-</div>
+            </div>
+            <div class="input-row">
+                <div class="input-label">RB回数</div>
+                <div class="input-group">
+                    <input type="number" id="rbCount" placeholder="例: 8" oninput="calculate()">
+                </div>
+                <div class="result-display" id="rbProb">-</div>
+            </div>
+            <div class="input-row">
+                <div class="input-label">ボーナス合算</div>
+                <div class="input-group"></div>
+                <div class="result-display" id="bonusProb">-</div>
+            </div>
+        </div>
+
+        <!-- 通常時小役 -->
+        <div class="section">
+            <div class="section-title">🌸 通常時小役カウント</div>
+            <div class="input-row">
+                <div class="input-label">風鈴A <span class="info-badge">重要</span></div>
+                <div class="input-group">
+                    <input type="number" id="furinA" placeholder="例: 230" oninput="calculate()">
+                </div>
+                <div class="result-display" id="furinAProb">-</div>
+            </div>
+            <div class="input-row">
+                <div class="input-label">風鈴B</div>
+                <div class="input-group">
+                    <input type="number" id="furinB" placeholder="例: 80" oninput="calculate()">
+                </div>
+                <div class="result-display" id="furinBProb">-</div>
+            </div>
+            <div class="input-row">
+                <div class="input-label">風鈴合算 <span class="info-badge">重要</span></div>
+                <div class="input-group"></div>
+                <div class="result-display" id="furinTotalProb">-</div>
+            </div>
+            <div class="input-row">
+                <div class="input-label">氷A</div>
+                <div class="input-group">
+                    <input type="number" id="kooriA" placeholder="例: 65" oninput="calculate()">
+                </div>
+                <div class="result-display" id="kooriAProb">-</div>
+            </div>
+            <div class="input-row">
+                <div class="input-label">チェリーA1</div>
+                <div class="input-group">
+                    <input type="number" id="cherryA1" placeholder="例: 30" oninput="calculate()">
+                </div>
+                <div class="result-display" id="cherryA1Prob">-</div>
+            </div>
+            <div class="input-row">
+                <div class="input-label">チェリーA2</div>
+                <div class="input-group">
+                    <input type="number" id="cherryA2" placeholder="例: 150" oninput="calculate()">
+                </div>
+                <div class="result-display" id="cherryA2Prob">-</div>
+            </div>
+            <div class="input-row">
+                <div class="input-label">チェリーB</div>
+                <div class="input-group">
+                    <input type="number" id="cherryB" placeholder="例: 10" oninput="calculate()">
+                </div>
+                <div class="result-display" id="cherryBProb">-</div>
+            </div>
+        </div>
+
+        <!-- BB中データ -->
+        <div class="section">
+            <div class="section-title">💎 BB中データ</div>
+            <div class="input-row">
+                <div class="input-label">BB中 斜め風鈴出現回数</div>
+                <div class="input-group">
+                    <input type="number" id="bbNanameFurin" placeholder="例: 5" oninput="calculate()">
+                </div>
+                <div class="result-display" id="bbNanameFurinDisplay">-</div>
+            </div>
+            <div class="special-flags">
+                <div class="flag-item">
+                    <input type="checkbox" id="bbBarake" onchange="calculate()">
+                    <label for="bbBarake">BB中バラケ目出現（設定5以上濃厚！）</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- RB中データ -->
+        <div class="section">
+            <div class="section-title">🎴 RB中データ</div>
+            <div class="input-row">
+                <div class="input-label">RB中 1枚役出現回数</div>
+                <div class="input-group">
+                    <input type="number" id="rb1mai" placeholder="例: 15" oninput="calculate()">
+                </div>
+                <div class="result-display" id="rb1maiDisplay">-</div>
+            </div>
+            <div class="special-flags">
+                <div class="flag-item">
+                    <input type="checkbox" id="rbBarake" onchange="calculate()">
+                    <label for="rbBarake">RB中バラケ目出現（設定6濃厚！）</label>
+                </div>
+                <div class="flag-item">
+                    <input type="checkbox" id="rbPeace" onchange="calculate()">
+                    <label for="rbPeace">RB終了画面ピースマーク（設定2以上濃厚！）</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ボタン -->
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="calculate()">📊 設定推測</button>
+            <button class="btn btn-secondary" onclick="resetAll()">🔄 リセット</button>
+        </div>
+
+        <!-- 結果表示 -->
+        <div id="results" style="display: none;">
+            <div class="section">
+                <div class="section-title">📈 推測結果</div>
+                <div class="results">
+                    <div id="settingResults"></div>
+                    <div class="judge-box" id="judgeBox"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const settingData = {
+            1: {
+                bb: 297.9, rb: 394.8, bonus: 169.8,
+                furinA: 12.9, furinB: 38.4, furinTotal: 9.68,
+                kooriA: 46.3,
+                cherryA1: 99.4, cherryA2: 21.0, cherryB: 307.7,
+                bbNanameFurin: 10.0, rb1mai: 8.0
+            },
+            2: {
+                bb: 292.6, rb: 358.1, bonus: 161.0,
+                furinA: 12.5, furinB: 38.7, furinTotal: 9.45,
+                kooriA: 47.3,
+                cherryA1: 99.4, cherryA2: 19.4, cherryB: 306.2,
+                bbNanameFurin: 7.0, rb1mai: 8.0
+            },
+            5: {
+                bb: 284.9, rb: 313.6, bonus: 149.3,
+                furinA: 12.1, furinB: 36.2, furinTotal: 9.06,
+                kooriA: 46.2,
+                cherryA1: 99.4, cherryA2: 20.5, cherryB: 300.6,
+                bbNanameFurin: 10.0, rb1mai: 7.0
+            },
+            6: {
+                bb: 273.1, rb: 282.5, bonus: 138.8,
+                furinA: 11.5, furinB: 34.5, furinTotal: 8.64,
+                kooriA: 47.4,
+                cherryA1: 99.3, cherryA2: 19.6, cherryB: 297.9,
+                bbNanameFurin: 7.0, rb1mai: 7.0
+            }
+        };
+
+        function calculate() {
+            const totalGames = parseInt(document.getElementById('totalGames').value) || 0;
+            
+            if (totalGames === 0) {
+                document.getElementById('results').style.display = 'none';
+                return;
+            }
+
+            // ボーナス確率計算
+            const bbCount = parseInt(document.getElementById('bbCount').value) || 0;
+            const rbCount = parseInt(document.getElementById('rbCount').value) || 0;
+            const bonusTotal = bbCount + rbCount;
+
+            const bbProb = bbCount > 0 ? totalGames / bbCount : 0;
+            const rbProb = rbCount > 0 ? totalGames / rbCount : 0;
+            const bonusProb = bonusTotal > 0 ? totalGames / bonusTotal : 0;
+
+            document.getElementById('bbProb').textContent = bbCount > 0 ? `1/${bbProb.toFixed(1)}` : '-';
+            document.getElementById('rbProb').textContent = rbCount > 0 ? `1/${rbProb.toFixed(1)}` : '-';
+            document.getElementById('bonusProb').textContent = bonusTotal > 0 ? `1/${bonusProb.toFixed(1)}` : '-';
+
+            // 小役確率計算
+            const furinA = parseInt(document.getElementById('furinA').value) || 0;
+            const furinB = parseInt(document.getElementById('furinB').value) || 0;
+            const kooriA = parseInt(document.getElementById('kooriA').value) || 0;
+            const cherryA1 = parseInt(document.getElementById('cherryA1').value) || 0;
+            const cherryA2 = parseInt(document.getElementById('cherryA2').value) || 0;
+            const cherryB = parseInt(document.getElementById('cherryB').value) || 0;
+
+            const furinAProb = furinA > 0 ? totalGames / furinA : 0;
+            const furinBProb = furinB > 0 ? totalGames / furinB : 0;
+            const furinTotal = furinA + furinB;
+            const furinTotalProb = furinTotal > 0 ? totalGames / furinTotal : 0;
+            const kooriAProb = kooriA > 0 ? totalGames / kooriA : 0;
+            const cherryA1Prob = cherryA1 > 0 ? totalGames / cherryA1 : 0;
+            const cherryA2Prob = cherryA2 > 0 ? totalGames / cherryA2 : 0;
+            const cherryBProb = cherryB > 0 ? totalGames / cherryB : 0;
+
+            document.getElementById('furinAProb').textContent = furinA > 0 ? `1/${furinAProb.toFixed(1)}` : '-';
+            document.getElementById('furinBProb').textContent = furinB > 0 ? `1/${furinBProb.toFixed(1)}` : '-';
+            document.getElementById('furinTotalProb').textContent = furinTotal > 0 ? `1/${furinTotalProb.toFixed(1)}` : '-';
+            document.getElementById('kooriAProb').textContent = kooriA > 0 ? `1/${kooriAProb.toFixed(1)}` : '-';
+            document.getElementById('cherryA1Prob').textContent = cherryA1 > 0 ? `1/${cherryA1Prob.toFixed(1)}` : '-';
+            document.getElementById('cherryA2Prob').textContent = cherryA2 > 0 ? `1/${cherryA2Prob.toFixed(1)}` : '-';
+            document.getElementById('cherryBProb').textContent = cherryB > 0 ? `1/${cherryBProb.toFixed(1)}` : '-';
+
+            // BB中・RB中データ
+            const bbNanameFurin = parseInt(document.getElementById('bbNanameFurin').value) || 0;
+            const rb1mai = parseInt(document.getElementById('rb1mai').value) || 0;
+            document.getElementById('bbNanameFurinDisplay').textContent = bbNanameFurin > 0 ? `${bbNanameFurin}回` : '-';
+            document.getElementById('rb1maiDisplay').textContent = rb1mai > 0 ? `${rb1mai}回` : '-';
+
+            // スコアリング
+            let scores = { 1: 0, 2: 0, 5: 0, 6: 0 };
+            let judgements = [];
+
+            // ボーナス確率評価
+            if (bonusTotal > 0) {
+                for (let setting in settingData) {
+                    const diff = Math.abs(bonusProb - settingData[setting].bonus);
+                    scores[setting] += Math.max(0, 200 - diff * 2);
+                }
+                let judge = 'normal';
+                let text = '標準的';
+                if (bonusProb < 150) {
+                    judge = 'good';
+                    text = '高設定の期待大！';
+                } else if (bonusProb > 165) {
+                    judge = 'bad';
+                    text = '低設定の可能性';
+                }
+                judgements.push({ label: 'ボーナス合算', value: `1/${bonusProb.toFixed(1)}`, judge, text });
+            }
+
+            // BB確率評価
+            if (bbCount > 0) {
+                for (let setting in settingData) {
+                    const diff = Math.abs(bbProb - settingData[setting].bb);
+                    scores[setting] += Math.max(0, 150 - diff * 1.5);
+                }
+            }
+
+            // RB確率評価
+            if (rbCount > 0) {
+                for (let setting in settingData) {
+                    const diff = Math.abs(rbProb - settingData[setting].rb);
+                    scores[setting] += Math.max(0, 150 - diff * 1.5);
+                }
+            }
+
+            // 風鈴合算評価（最重要）
+            if (furinTotal > 0) {
+                for (let setting in settingData) {
+                    const diff = Math.abs(furinTotalProb - settingData[setting].furinTotal);
+                    scores[setting] += Math.max(0, 250 - diff * 30);
+                }
+                let judge = 'normal';
+                let text = '標準的';
+                if (furinTotalProb < 9.0) {
+                    judge = 'good';
+                    text = '高設定示唆！';
+                } else if (furinTotalProb > 9.5) {
+                    judge = 'bad';
+                    text = '低設定の可能性';
+                }
+                judgements.push({ label: '風鈴合算', value: `1/${furinTotalProb.toFixed(2)}`, judge, text });
+            }
+
+            // 風鈴A評価（重要）
+            if (furinA > 0) {
+                for (let setting in settingData) {
+                    const diff = Math.abs(furinAProb - settingData[setting].furinA);
+                    scores[setting] += Math.max(0, 200 - diff * 25);
+                }
+                let judge = 'normal';
+                let text = '標準的';
+                if (furinAProb < 12.0) {
+                    judge = 'good';
+                    text = '高設定の期待！';
+                } else if (furinAProb > 12.7) {
+                    judge = 'bad';
+                    text = '低設定の可能性';
+                }
+                judgements.push({ label: '風鈴A', value: `1/${furinAProb.toFixed(1)}`, judge, text });
+            }
+
+            // BB中斜め風鈴評価
+            if (bbNanameFurin > 0 && bbCount > 0) {
+                const nanameAvg = bbNanameFurin / bbCount;
+                if (nanameAvg > 1.3) {
+                    scores[2] += 100;
+                    scores[6] += 100;
+                    judgements.push({ label: 'BB中斜め風鈴', value: `平均${nanameAvg.toFixed(1)}回/BB`, judge: 'good', text: '偶数設定示唆' });
+                }
+            }
+
+            // 特殊フラグ評価
+            const bbBarake = document.getElementById('bbBarake').checked;
+            const rbBarake = document.getElementById('rbBarake').checked;
+            const rbPeace = document.getElementById('rbPeace').checked;
+
+            if (bbBarake) {
+                scores[5] += 300;
+                scores[6] += 300;
+                judgements.push({ label: 'BB中バラケ目', value: '出現', judge: 'good', text: '設定5以上濃厚！' });
+            }
+
+            if (rbBarake) {
+                scores[6] += 500;
+                judgements.push({ label: 'RB中バラケ目', value: '出現', judge: 'good', text: '設定6濃厚！' });
+            }
+
+            if (rbPeace) {
+                scores[2] += 200;
+                scores[5] += 200;
+                scores[6] += 200;
+                judgements.push({ label: 'RB終了画面', value: 'ピースマーク', judge: 'good', text: '設定2以上濃厚！' });
+            }
+
+            // RB中1枚役評価
+            if (rb1mai > 0 && rbCount > 0) {
+                const maiAvg = rb1mai / rbCount;
+                for (let setting in settingData) {
+                    const expected = 12 / settingData[setting].rb1mai;
+                    const diff = Math.abs(maiAvg - expected);
+                    scores[setting] += Math.max(0, 100 - diff * 30);
+                }
+                if (maiAvg > 1.6) {
+                    judgements.push({ label: 'RB中1枚役', value: `平均${maiAvg.toFixed(1)}回/RB`, judge: 'good', text: '設定5以上示唆' });
+                }
+            }
+
+            // 結果表示
+            const maxScore = Math.max(...Object.values(scores));
+            let resultsHTML = '';
+            
+            const settings = [6, 5, 2, 1];
+            settings.forEach(setting => {
+                const percentage = maxScore > 0 ? (scores[setting] / maxScore * 100).toFixed(1) : 0;
+                resultsHTML += `
+                    <div class="result-item setting-${setting}">
+                        <h3>設定${setting}</h3>
+                        <div class="probability">信頼度: ${percentage}%</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${percentage}%">${percentage}%</div>
+                        </div>
+                        <div class="detail-info">
+                            <div class="detail-item">期待BB: 1/${settingData[setting].bb}</div>
+                            <div class="detail-item">期待RB: 1/${settingData[setting].rb}</div>
+                            <div class="detail-item">期待合算: 1/${settingData[setting].bonus}</div>
+                            <div class="detail-item">期待風鈴合算: 1/${settingData[setting].furinTotal}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('settingResults').innerHTML = resultsHTML;
+
+            // 判定結果表示
+            let judgeHTML = '<div class="judge-title">各要素の判定</div>';
+            judgements.forEach(j => {
+                judgeHTML += `
+                    <div class="judge-item judge-${j.judge}">
+                        <div>
+                            <strong>${j.label}</strong>: ${j.value}
+                        </div>
+                        <div>${j.text}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('judgeBox').innerHTML = judgeHTML;
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetAll() {
+            if (confirm('入力データをすべてリセットしますか？')) {
+                document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+                document.querySelectorAll('input[type="checkbox"]').forEach(input => input.checked = false);
+                document.querySelectorAll('.result-display').forEach(display => display.textContent = '-');
+                document.getElementById('results').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
